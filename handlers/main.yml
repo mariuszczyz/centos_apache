@@ -1,0 +1,5 @@
+---
+# handlers file for mariuszczyz.centos-apache
+
+- name: restart apache
+  command: systemctl restart httpd
