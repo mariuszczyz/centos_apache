@@ -1,38 +1,105 @@
-Role Name
-=========
+# CentOS 7/8 & Fedora Apache Server Installation and Configuration Role
 
-A brief description of the role goes here.
+A very simple role to install and configure a basic instance of Apache web server on CentOS and Fedora. 
 
-Requirements
-------------
+The only customization for now is some basic performance tuning for low resource servers. 
 
-Any pre-requisites that may not be covered by Ansible itself or the role should be mentioned here. For instance, if the role uses the EC2 module, it may be a good idea to mention in this section that the boto package is required.
+```conf
+KeepAlive Off
 
-Role Variables
---------------
+<IfModule prefork.c>
+    StartServers        4
+    MinSpareServers     20
+    MaxSpareServers     40
+    MaxClients          200
+    MaxRequestsPerChild 4500
+</IfModule>
+```
 
-A description of the settable variables for this role should go here, including any variables that are in defaults/main.yml, vars/main.yml, and any variables that can/should be set via parameters to the role. Any variables that are read from other roles and/or the global scope (ie. hostvars, group vars, etc.) should be mentioned here as well.
+## Requirements
 
-Dependencies
-------------
+None.
 
-A list of other roles hosted on Galaxy should go here, plus any details in regards to parameters that may need to be set for other roles, or variables that are used from other roles.
+## Role Variables
 
-Example Playbook
-----------------
+Add and customize the following role variables in one of the following locations:
 
-Including an example of how to use your role (for instance, with variables passed in as parameters) is always nice for users too:
+Recommended:
 
-    - hosts: servers
-      roles:
-         - { role: username.rolename, x: 42 }
+- host_vars/{{ HOSTNAME }}.yml
+- group_vars/{{ GROUPNAME }}.yml
 
-License
--------
+Optional:
+
+- {{ roles_path }}/mariuszczyz.centos_apache/defaults/main.yml
+
+Replace `{{ HOSTNAME }}` and `{{ GROUPNAME }}` with appropriate
+inventory names.
+
+It's recommended to add all required variables to `hosts_vars` and
+`group_vars`. This way they will not get overwritten next time the
+original role is updated.
+
+## Dependencies
+
+None.
+
+## Example Playbook
+
+### Manual
+
+Fetch this role from Ansible Galaxy manually:
+
+`ansible-galaxy install mariuszczyz.centos_apache`
+
+### Not Manual
+
+#### Galaxy
+
+Or include this role from Ansible Galaxy via `requirements.yml`
+
+```yaml
+# requirements.yml
+# Install from Ansible Galaxy
+- src: mariuszczyz.centos_apache
+```
+
+#### Github option
+
+```yaml
+# requirements.yml
+# Install from Github repository
+- src: https://www.github.com/mariuszczyz/centos_apache
+```
+
+Then run this to install all dependencies from Ansible Galaxy:
+
+`ansible-galaxy install -r requirements.yml`
+
+### Run it
+
+If you want to run this role individually create a new file:
+`playbook.yml` (name it however you wish btw) with the following content:
+
+```yaml
+- hosts: servers
+  user: YOUR USER
+  become: True
+
+  roles:
+    - { role: mariuszczyz.centos_apache, tags: ['centos_apache'] }
+```
+
+Run it:
+
+`ansible-playbook -i hosts playbook.yml`
+
+## License
 
 BSD
 
-Author Information
-------------------
+## Author Information
 
-An optional section for the role authors to include contact information, or a website (HTML is not allowed).
+Author: Mariusz Czyz  
+Date: 12/2019  
+mariuszczyz.com
