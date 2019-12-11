@@ -2,4 +2,7 @@
 # handlers file for mariuszczyz.centos-apache
 
 - name: restart apache
-  command: systemctl restart httpd
+  service:
+    name: httpd
+    state: restarted
+  listen: restart apache
