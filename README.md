@@ -1,8 +1,8 @@
 # CentOS 7/8 & Fedora Apache Server Installation and Configuration Role
 
-A very simple role to install and configure a basic instance of Apache web server on CentOS and Fedora. 
+A very simple role to install and configure a basic instance of Apache web server on CentOS and Fedora.
 
-The only customization for now is some basic performance tuning for low resource servers. 
+The only customization for now is some basic performance tuning for low resource servers.
 
 ```conf
 KeepAlive Off
@@ -39,6 +39,15 @@ inventory names.
 It's recommended to add all required variables to `hosts_vars` and
 `group_vars`. This way they will not get overwritten next time the
 original role is updated.
+
+| Variable | Comment | Example |
+| -------- | ------- | ------- |
+| START_SERVERS | initial number of threads to spawn on service restart | 4 |
+| MIN_SPARE_SERVERS | number of threads to keep warm | 20 |
+| MAX_SPARE_SERVERS | max number of threads to keep warm following a traffic spike | 40 |
+| MAX_CLIENTS | maximum number of connections | 200 |
+| MAX_REQUEST_PER_CHILD | max number of request to handle per thread before killing it | 4500 |
+| |
 
 ## Dependencies
 

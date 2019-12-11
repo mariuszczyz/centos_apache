@@ -7,8 +7,8 @@
     state: latest
 
 - name: Install custom Apache configuration file
-  copy:
-    src: custom.conf
+  template:
+    src: custom.conf.j2
     dest: /etc/httpd/conf.d/custom.conf
     mode: 0644
     owner: root
