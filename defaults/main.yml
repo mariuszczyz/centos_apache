@@ -1,17 +1,17 @@
 ---
-# defaults file for mariuszczyz.centos-apache
+# defaults file for centos_apache
 
-# initial number of threads to spawn on service restart
-START_SERVERS: 4
+# Initial number of server processes to spawn on service start
+apache_start_servers: 4
 
-# number of threads to keep warm
-MIN_SPARE_SERVERS: 20
+# Minimum number of idle worker processes
+apache_min_spare_servers: 20
 
-# max number of threads to keep warm following a traffic spike
-MAX_SPARE_SERVERS: 40
+# Maximum number of idle worker processes to retain after a traffic spike
+apache_max_spare_servers: 40
 
-# maximum number of connections
-MAX_CLIENTS: 200
+# Maximum number of simultaneous connections
+apache_max_request_workers: 200
 
-# max number of request to handle per thread before killing it
-MAX_REQUEST_PER_CHILD: 4500
+# Maximum number of requests a worker process handles before it is recycled
+apache_max_connections_per_child: 4500

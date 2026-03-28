@@ -1,32 +1,36 @@
 ---
-# tasks file for mariuszczyz.centos-apache
+# tasks file for centos_apache
 
-- name: Install the latest Apache 2.4 for CentOS
-  yum:
+- name: Install Apache web server
+  ansible.builtin.package:
     name: httpd
-    state: latest
+    state: present
+  become: true
 
-- name: Install custom Apache configuration file
-  template:
+- name: Deploy Apache configuration
+  ansible.builtin.template:
     src: custom.conf.j2
     dest: /etc/httpd/conf.d/custom.conf
-    mode: 0644
     owner: root
     group: root
-  notify: restart apache
+    mode: '0644'
+  become: true
+  notify: Restart Apache
 
 - name: Remove default Apache configuration files
-  file:
+  ansible.builtin.file:
     path: "/etc/httpd/conf.d/{{ item }}"
     state: absent
-  with_items:
+  loop:
     - welcome.conf
     - userdir.conf
     - README
-  notify: restart apache
+  become: true
+  notify: Restart Apache
 
-- name: Start and enable Apache
-  service:
+- name: Start and enable Apache service
+  ansible.builtin.service:
     name: httpd
     state: started
-    enabled: yes
+    enabled: true
+  become: true
