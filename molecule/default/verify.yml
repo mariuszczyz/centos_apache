@@ -1,0 +1,82 @@
+---
+- name: Verify
+  hosts: all
+  become: true
+  tasks:
+    - name: Collect installed packages
+      ansible.builtin.package_facts:
+        manager: auto
+
+    - name: Assert httpd package is installed
+      ansible.builtin.assert:
+        that:
+          - "'httpd' in ansible_facts.packages"
+        fail_msg: "httpd package is not installed"
+
+    - name: Collect the httpd service state
+      ansible.builtin.systemd:
+        name: httpd
+      register: httpd_service
+      changed_when: false
+
+    - name: Assert httpd service is active
+      ansible.builtin.assert:
+        that:
+          - httpd_service.status.ActiveState == "active"
+        fail_msg: "httpd service is not active ({{ httpd_service.status.ActiveState }})"
+
+    - name: Check Apache configuration syntax
+      ansible.builtin.command:
+        cmd: httpd -t
+      register: httpd_configtest
+      changed_when: false
+
+    - name: Assert Apache configuration syntax is valid
+      ansible.builtin.assert:
+        that:
+          - httpd_configtest.rc == 0
+        fail_msg: "httpd -t failed ({{ httpd_configtest.stderr | default('') }})"
+
+    - name: Read deployed Apache configuration
+      ansible.builtin.slurp:
+        src: /etc/httpd/conf.d/custom.conf
+      register: httpd_config
+
+    - name: Assert tuning directives are present
+      ansible.builtin.assert:
+        that:
+          - "'MaxRequestWorkers      200' in config_text"
+          - "'StartServers           4' in config_text"
+          - "'KeepAlive Off' in config_text"
+        fail_msg: "custom.conf does not contain the expected tuning directives"
+      vars:
+        config_text: "{{ httpd_config.content | b64decode }}"
+
+    - name: Check default configuration files are removed
+      ansible.builtin.stat:
+        path: "/etc/httpd/conf.d/{{ item }}"
+      loop:
+        - welcome.conf
+        - userdir.conf
+      register: removed_files
+
+    - name: Assert default configuration files are absent
+      ansible.builtin.assert:
+        that:
+          - not item.stat.exists
+        fail_msg: "{{ item.item }} still exists in /etc/httpd/conf.d"
+      loop: "{{ removed_files.results }}"
+      loop_control:
+        label: "{{ item.item }}"
+
+    - name: Check Apache answers on localhost
+      ansible.builtin.uri:
+        url: http://localhost/
+        status_code: [200]
+      register: http_response
+
+    - name: Assert Apache answers on localhost
+      ansible.builtin.assert:
+        that:
+          - http_response.status == 200
+        fail_msg: "http://localhost/ did not answer 200 (status {{ http_response.status }})"

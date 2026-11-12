@@ -1,0 +1,77 @@
+---
+dependency:
+  name: galaxy
+driver:
+  name: podman
+platforms:
+  - name: rockylinux-9
+    image: quay.io/rockylinux/rockylinux:9-ubi-init
+    pre_build_image: true
+    command: /sbin/init
+    privileged: true
+  - name: rockylinux-10
+    image: quay.io/rockylinux/rockylinux:10
+    pre_build_image: true
+    command: /sbin/init
+    privileged: true
+  - name: almalinux-9
+    image: docker.io/library/almalinux:9
+    pre_build_image: true
+    command: /sbin/init
+    privileged: true
+  - name: almalinux-10
+    image: docker.io/library/almalinux:10
+    pre_build_image: true
+    command: /sbin/init
+    privileged: true
+  - name: centos-stream-9
+    image: quay.io/centos/centos:stream9
+    pre_build_image: true
+    command: /sbin/init
+    privileged: true
+  - name: centos-stream-10
+    image: quay.io/centos/centos:stream10
+    pre_build_image: true
+    command: /sbin/init
+    privileged: true
+  - name: fedora-43
+    image: docker.io/library/fedora:43
+    pre_build_image: true
+    command: /sbin/init
+    privileged: true
+  - name: fedora-44
+    image: docker.io/library/fedora:44
+    pre_build_image: true
+    command: /sbin/init
+    privileged: true
+  - name: fedora-45
+    image: docker.io/library/fedora:45
+    pre_build_image: true
+    command: /sbin/init
+    privileged: true
+provisioner:
+  name: ansible
+  # Podman instances are reached as root through the podman connection plugin.
+  # Sudo is absent from the base images, so become is disabled here.
+  inventory:
+    host_vars:
+      rockylinux-9:
+        ansible_become: false
+      rockylinux-10:
+        ansible_become: false
+      almalinux-9:
+        ansible_become: false
+      almalinux-10:
+        ansible_become: false
+      centos-stream-9:
+        ansible_become: false
+      centos-stream-10:
+        ansible_become: false
+      fedora-43:
+        ansible_become: false
+      fedora-44:
+        ansible_become: false
+      fedora-45:
+        ansible_become: false
+verifier:
+  name: ansible

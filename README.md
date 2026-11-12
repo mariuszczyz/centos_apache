@@ -1,39 +1,39 @@
 # centos_apache
 
-An Ansible role to install and configure Apache web server on CentOS 9, CentOS Stream 10, and Fedora 43.
+This role installs and configures Apache HTTP Server on Enterprise Linux and Fedora.
 
-Includes performance tuning for the prefork MPM via configurable role variables.
-
-```conf
-KeepAlive Off
-
-<IfModule mpm_prefork_module>
-    StartServers           4
-    MinSpareServers        20
-    MaxSpareServers        40
-    MaxRequestWorkers      200
-    MaxConnectionsPerChild 4500
-</IfModule>
-```
+License: MIT.
 
 ## Requirements
 
-- Ansible >= 2.14
-- Target hosts must be running CentOS 9, CentOS Stream 10, or Fedora 43
-- The invoking playbook must set `become: true` or the role tasks will escalate privileges individually
+- ansible-core 2.17 or later.
+- A target host from the platform table below.
+- Privilege escalation. Set `become: true` in the playbook that uses this role.
+
+## Platforms
+
+| Platform | Versions |
+| -------- | -------- |
+| Rocky Linux | 9, 10 |
+| AlmaLinux | 9, 10 |
+| CentOS Stream | 9, 10 |
+| Fedora | 43, 44, 45 |
+
+Fedora 43 support ends on 2026-12-01. Remove that release from your inventory before that date.
 
 ## Role Variables
 
-Override any of the following in `host_vars/`, `group_vars/`, or your playbook vars. The defaults
-are defined in `defaults/main.yml` and are suitable for low-resource servers.
+`meta/argument_specs.yml` defines these variables. Ansible checks the type of each variable at role entry. `defaults/main.yml` holds the same defaults.
 
 | Variable | Default | Description |
 | -------- | ------- | ----------- |
-| `apache_start_servers` | `4` | Initial number of worker processes spawned at startup |
-| `apache_min_spare_servers` | `20` | Minimum number of idle worker processes to keep alive |
-| `apache_max_spare_servers` | `40` | Maximum number of idle worker processes to retain after a traffic spike |
-| `apache_max_request_workers` | `200` | Maximum number of simultaneous connections |
-| `apache_max_connections_per_child` | `4500` | Requests a worker handles before being recycled |
+| `apache_start_servers` | `4` | Initial number of server processes to spawn on service start. |
+| `apache_min_spare_servers` | `20` | Minimum number of idle worker processes. |
+| `apache_max_spare_servers` | `40` | Maximum number of idle worker processes to retain after a traffic spike. |
+| `apache_max_request_workers` | `200` | Maximum number of simultaneous connections. |
+| `apache_max_connections_per_child` | `4500` | Maximum number of requests a worker process handles before it is recycled. Apache treats `0` as "no limit". |
+
+The role writes these values to `/etc/httpd/conf.d/custom.conf`. The defaults suit a low-resource server.
 
 ## Dependencies
 
@@ -84,9 +84,25 @@ Via `requirements.yml`:
 ansible-galaxy install -r requirements.yml
 ```
 
+## Testing
+
+Tests use Molecule with the Podman driver. Install the test dependencies first:
+
+```bash
+pip install -r requirements.txt
+```
+
+Run the full test sequence:
+
+```bash
+molecule test
+```
+
+You need Podman on the control host. The test creates one container for each of the nine platforms in the table above. Molecule converges the role on every container, checks idempotence, and then runs the verify stage. The verify stage checks that httpd runs, that `/etc/httpd/conf.d/custom.conf` holds the tuned directives, that the default welcome and userdir files are absent, and that `http://localhost/` answers 200. The first run pulls about 700 MB of container images.
+
 ## License
 
-BSD
+MIT. See [LICENSE](LICENSE).
 
 ## Author
 
