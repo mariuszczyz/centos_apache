@@ -1,0 +1,41 @@
+---
+argument_specs:
+  main:
+    short_description: Install and configure Apache HTTP Server.
+    description:
+      - Installs the C(httpd) package.
+      - Deploys a prefork MPM tuning file at F(/etc/httpd/conf.d/custom.conf).
+      - Removes the default welcome and userdir configuration files.
+    author:
+      - Mariusz Czyz
+    options:
+      apache_start_servers:
+        description:
+          - Initial number of server processes to spawn on service start.
+          - Use a value of 1 or more.
+        type: int
+        default: 4
+      apache_min_spare_servers:
+        description:
+          - Minimum number of idle worker processes.
+          - Use a value of 1 or more.
+        type: int
+        default: 20
+      apache_max_spare_servers:
+        description:
+          - Maximum number of idle worker processes to retain after a traffic spike.
+          - Use a value of 1 or more.
+        type: int
+        default: 40
+      apache_max_request_workers:
+        description:
+          - Maximum number of simultaneous connections.
+          - Use a value of 1 or more.
+        type: int
+        default: 200
+      apache_max_connections_per_child:
+        description:
+          - Maximum number of requests a worker process handles before it is recycled.
+          - Apache treats 0 as no limit.
+        type: int
+        default: 4500
