@@ -98,7 +98,7 @@ Run the full test sequence:
 molecule test
 ```
 
-You need Podman on the control host. The test creates one container for each of the nine platforms in the table above. Molecule converges the role on every container, checks idempotence, and then runs the verify stage. The verify stage checks that httpd runs, that `/etc/httpd/conf.d/custom.conf` holds the tuned directives, that the default welcome and userdir files are absent, and that `http://localhost/` answers 200. The first run pulls about 700 MB of container images.
+You need Podman on the control host and Python 3.13+ for the test venv (ansible-core 2.22 dropped 3.12 and is required to manage Fedora 45, whose images ship Python 3.14). The test creates one container for each of the nine platforms in the table above. The CentOS Stream and Fedora base images ship without systemd, so molecule builds a small layer on them (`Dockerfile.j2`) that installs systemd and python3; the Rocky and Alma images run pre-built. Molecule converges the role on every container, checks idempotence, and then runs the verify stage. The verify stage checks that httpd runs, that `/etc/httpd/conf.d/custom.conf` holds the tuned directives, that the default welcome and userdir files are absent, and that `http://localhost/` answers 200.
 
 ## License
 

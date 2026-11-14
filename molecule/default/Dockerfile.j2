@@ -1,0 +1,8 @@
+# Molecule builds this layer for platforms whose base OCI image ships
+# without systemd (CentOS Stream 9/10 and Fedora minimal images), so the
+# containers can run /sbin/init like the pre-built *-init images do.
+# Fedora minimal images also dropped python3, which Ansible needs; on EL
+# bases the python3 install is a no-op.
+FROM {{ item.image }}
+
+RUN dnf -y install systemd python3 && dnf clean all

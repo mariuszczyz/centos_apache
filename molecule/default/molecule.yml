@@ -10,7 +10,7 @@ platforms:
     command: /sbin/init
     privileged: true
   - name: rockylinux-10
-    image: quay.io/rockylinux/rockylinux:10
+    image: quay.io/rockylinux/rockylinux:10-ubi-init
     pre_build_image: true
     command: /sbin/init
     privileged: true
@@ -26,27 +26,32 @@ platforms:
     privileged: true
   - name: centos-stream-9
     image: quay.io/centos/centos:stream9
-    pre_build_image: true
+    # Base image has no systemd; Dockerfile.j2 layers it on.
+    pre_build_image: false
     command: /sbin/init
     privileged: true
   - name: centos-stream-10
     image: quay.io/centos/centos:stream10
-    pre_build_image: true
+    # Base image has no systemd; Dockerfile.j2 layers it on.
+    pre_build_image: false
     command: /sbin/init
     privileged: true
   - name: fedora-43
     image: docker.io/library/fedora:43
-    pre_build_image: true
+    # Base image has no systemd; Dockerfile.j2 layers it on.
+    pre_build_image: false
     command: /sbin/init
     privileged: true
   - name: fedora-44
     image: docker.io/library/fedora:44
-    pre_build_image: true
+    # Base image has no systemd; Dockerfile.j2 layers it on.
+    pre_build_image: false
     command: /sbin/init
     privileged: true
   - name: fedora-45
     image: docker.io/library/fedora:45
-    pre_build_image: true
+    # Base image has no systemd; Dockerfile.j2 layers it on.
+    pre_build_image: false
     command: /sbin/init
     privileged: true
 provisioner:
